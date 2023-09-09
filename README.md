@@ -1,7 +1,9 @@
-# API-PLAN-PERFECT - API OF PLAN PERFECT (TODO Application)
+# API-PLAN-PERFECT
+
+API OF PLAN PERFECT (TODO Application)
 
 ## URL-
 
-- Live Site API :
+- Live Site API : https://plan-perfect.vercel.app
 - Server Base API : https://api-plan-perfect.vercel.app
-- Client Repo :
+- Client Repo : https://github.com/mfarhadattari/plan-perfect.git

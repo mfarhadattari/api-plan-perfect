@@ -2,6 +2,7 @@ const express = require("express");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 const port = process.env.PORT || 3000;
 const uri = process.env.DB_URI;
@@ -32,6 +33,13 @@ const client = new MongoClient(uri, {
 
     app.get("/", (req, res) => {
       res.send("Plan perfect server is running!");
+    });
+
+    // !------------ JWT Token Generate ---------------
+    app.post("/generate-jwt", (req, res) => {
+      const data = req.body;
+      const token = jwt.sign({ email: data.email }, process.env.JWT_SECRET, {expiresIn: '30d'});
+      res.send({ token });
     });
 
     // ping if connected db successfully
