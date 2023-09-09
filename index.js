@@ -94,6 +94,13 @@ const client = new MongoClient(uri, {
       res.send(archives);
     });
 
+    // ! --------------- Delete Archive -------------
+    app.delete("/archives/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const deletedRes = await archiveCollection.deleteOne(query);
+      res.send(deletedRes);
+    });
+
     // ping if connected db successfully
     console.log("Successfully connected to database!");
   } catch (error) {
