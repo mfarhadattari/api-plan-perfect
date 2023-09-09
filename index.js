@@ -35,7 +35,7 @@ const client = new MongoClient(uri, {
       res.send("Plan perfect server is running!");
     });
 
-    // !------------ JWT Token Generate ---------------
+    // ! ------------ JWT Token Generate ---------------
     app.post("/generate-jwt", (req, res) => {
       const data = req.body;
       const token = jwt.sign({ email: data.email }, process.env.JWT_SECRET, {
@@ -44,21 +44,28 @@ const client = new MongoClient(uri, {
       res.send({ token });
     });
 
-    // ! -------------- Add Task --------------------
+    // ! ------------ My Task -------------------------
+    app.get("/tasks", async (req, res) => {
+      const query = { userEmail: req.query.email };
+      const tasks = await taskCollection.find(query).toArray();
+      res.send(tasks);
+    });
+
+    // ! -------------- Add Task ----------------------
     app.post("/tasks", async (req, res) => {
       const data = req.body;
       const insertedResult = await taskCollection.insertOne(data);
       res.send(insertedResult);
     });
 
-    // ! -------------- Delete Task -----------------
+    // ! -------------- Delete Task -------------------
     app.delete("/tasks/:id", async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const deletedResult = await taskCollection.deleteOne(query);
       res.send(deletedResult);
     });
 
-    // ! --------------- Update Task Status ----------
+    // ! --------------- Update Task Status -----------
     app.patch("/tasks/:id", async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const data = req.body;
@@ -68,7 +75,7 @@ const client = new MongoClient(uri, {
         },
       };
       const updatedResult = await taskCollection.updateOne(query, updateDoc);
-      res.send(updatedResult)
+      res.send(updatedResult);
     });
 
     // ping if connected db successfully
