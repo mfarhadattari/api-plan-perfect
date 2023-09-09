@@ -78,6 +78,15 @@ const client = new MongoClient(uri, {
       res.send(updatedResult);
     });
 
+    // ! -------------- Archive the Task -------------
+    app.delete("/archive-task/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const task = await taskCollection.findOne(query);
+      const deletedRes = await taskCollection.deleteOne(query);
+      const archiveInsertRes = await archiveCollection.insertOne(task);
+      res.send(archiveInsertRes);
+    });
+
     // ping if connected db successfully
     console.log("Successfully connected to database!");
   } catch (error) {
