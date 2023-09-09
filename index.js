@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
@@ -49,6 +49,13 @@ const client = new MongoClient(uri, {
       const data = req.body;
       const insertedResult = await taskCollection.insertOne(data);
       res.send(insertedResult);
+    });
+
+    // ! -------------- Delete Task -----------------
+    app.delete("/tasks/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const deletedResult = await taskCollection.deleteOne(query);
+      res.send(deletedResult);
     });
 
     // ping if connected db successfully
