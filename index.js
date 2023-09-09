@@ -58,6 +58,19 @@ const client = new MongoClient(uri, {
       res.send(deletedResult);
     });
 
+    // ! --------------- Update Task Status ----------
+    app.patch("/tasks/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const data = req.body;
+      const updateDoc = {
+        $set: {
+          status: data.status,
+        },
+      };
+      const updatedResult = await taskCollection.updateOne(query, updateDoc);
+      res.send(updatedResult)
+    });
+
     // ping if connected db successfully
     console.log("Successfully connected to database!");
   } catch (error) {
