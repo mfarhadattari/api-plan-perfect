@@ -38,8 +38,17 @@ const client = new MongoClient(uri, {
     // !------------ JWT Token Generate ---------------
     app.post("/generate-jwt", (req, res) => {
       const data = req.body;
-      const token = jwt.sign({ email: data.email }, process.env.JWT_SECRET, {expiresIn: '30d'});
+      const token = jwt.sign({ email: data.email }, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+      });
       res.send({ token });
+    });
+
+    // ! -------------- Add Task --------------------
+    app.post("/tasks", async (req, res) => {
+      const data = req.body;
+      const insertedResult = await taskCollection.insertOne(data);
+      res.send(insertedResult);
     });
 
     // ping if connected db successfully
