@@ -28,9 +28,9 @@ const client = new MongoClient(uri, {
     // db collections
     const db = await client.db("plan-perfect");
     const taskCollection = db.collection("tasks");
-    const userCollection = db.collection("users");
     const archiveCollection = db.collection("archives");
 
+    // ! --------------- Base --------------------
     app.get("/", (req, res) => {
       res.send("Plan perfect server is running!");
     });
@@ -85,6 +85,13 @@ const client = new MongoClient(uri, {
       const deletedRes = await taskCollection.deleteOne(query);
       const archiveInsertRes = await archiveCollection.insertOne(task);
       res.send(archiveInsertRes);
+    });
+
+    // ! -------------- My Archive -------------------
+    app.get("/archives", async (req, res) => {
+      const query = { userEmail: req.query.email };
+      const archives = await archiveCollection.find(query).toArray();
+      res.send(archives);
     });
 
     // ping if connected db successfully
