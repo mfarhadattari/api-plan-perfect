@@ -53,7 +53,7 @@ const client = new MongoClient(uri, {
       }
       const query = { userEmail: req.query.email };
       const tasks = await taskCollection
-        .find(query, { sort: { date: -1 } })
+        .find(query, { sort: { date: 1 } })
         .toArray();
       res.send(tasks);
     });
@@ -102,7 +102,7 @@ const client = new MongoClient(uri, {
       }
       const query = { userEmail: req.query.email };
       const archives = await archiveCollection
-        .find(query, { sort: { date: -1 } })
+        .find(query, { sort: { date: 1 } })
         .toArray();
       res.send(archives);
     });
@@ -114,8 +114,8 @@ const client = new MongoClient(uri, {
       res.send(deletedRes);
     });
 
-    // ! ---------------- Delete Account --------------
-    app.delete("/delete-data", jwtVerify, async (req, res) => {
+    // ! ---------------- Clear Data --------------
+    app.delete("/clear-data", jwtVerify, async (req, res) => {
       const decodedEmail = req.decoded.email;
       if (decodedEmail !== req.query.email) {
         return res.status(401).send({ error: true, message: "Unauthorized Access" });
@@ -123,8 +123,7 @@ const client = new MongoClient(uri, {
       const query = { userEmail: req.query.email };
       const deletedTask = await taskCollection.deleteMany(query);
       const deletedArchive = await archiveCollection.deleteMany(query);
-      console.log(deletedTask, deletedArchive);
-      res.send({ deletedArchive, deletedTask });
+      res.send(deletedArchive);
     });
 
     // ping if connected db successfully
