@@ -3,6 +3,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const { jwtVerify } = require("./middleware");
 
 const port = process.env.PORT || 3000;
 const uri = process.env.DB_URI;
@@ -45,28 +46,34 @@ const client = new MongoClient(uri, {
     });
 
     // ! ------------ My Task -------------------------
-    app.get("/tasks", async (req, res) => {
+    app.get("/tasks", jwtVerify, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      if (decodedEmail !== req.query.email) {
+        return res.status(401).send({ error: true, message: "Unauthorized Access" });
+      }
       const query = { userEmail: req.query.email };
-      const tasks = await taskCollection.find(query).toArray();
+      const tasks = await taskCollection
+        .find(query, { sort: { date: -1 } })
+        .toArray();
       res.send(tasks);
     });
 
     // ! -------------- Add Task ----------------------
-    app.post("/tasks", async (req, res) => {
+    app.post("/tasks", jwtVerify, async (req, res) => {
       const data = req.body;
       const insertedResult = await taskCollection.insertOne(data);
       res.send(insertedResult);
     });
 
     // ! -------------- Delete Task -------------------
-    app.delete("/tasks/:id", async (req, res) => {
+    app.delete("/tasks/:id", jwtVerify, async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const deletedResult = await taskCollection.deleteOne(query);
       res.send(deletedResult);
     });
 
     // ! --------------- Update Task Status -----------
-    app.patch("/tasks/:id", async (req, res) => {
+    app.patch("/tasks/:id", jwtVerify, async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const data = req.body;
       const updateDoc = {
@@ -79,7 +86,7 @@ const client = new MongoClient(uri, {
     });
 
     // ! -------------- Archive the Task -------------
-    app.delete("/archive-task/:id", async (req, res) => {
+    app.delete("/archive-task/:id", jwtVerify, async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const task = await taskCollection.findOne(query);
       const deletedRes = await taskCollection.deleteOne(query);
@@ -88,17 +95,36 @@ const client = new MongoClient(uri, {
     });
 
     // ! -------------- My Archive -------------------
-    app.get("/archives", async (req, res) => {
+    app.get("/archives", jwtVerify, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      if (decodedEmail !== req.query.email) {
+        return res.status(401).send({ error: true, message: "Unauthorized Access" });
+      }
       const query = { userEmail: req.query.email };
-      const archives = await archiveCollection.find(query).toArray();
+      const archives = await archiveCollection
+        .find(query, { sort: { date: -1 } })
+        .toArray();
       res.send(archives);
     });
 
     // ! --------------- Delete Archive -------------
-    app.delete("/archives/:id", async (req, res) => {
+    app.delete("/archives/:id", jwtVerify, async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const deletedRes = await archiveCollection.deleteOne(query);
       res.send(deletedRes);
+    });
+
+    // ! ---------------- Delete Account --------------
+    app.delete("/delete-data", jwtVerify, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      if (decodedEmail !== req.query.email) {
+        return res.status(401).send({ error: true, message: "Unauthorized Access" });
+      }
+      const query = { userEmail: req.query.email };
+      const deletedTask = await taskCollection.deleteMany(query);
+      const deletedArchive = await archiveCollection.deleteMany(query);
+      console.log(deletedTask, deletedArchive);
+      res.send({ deletedArchive, deletedTask });
     });
 
     // ping if connected db successfully

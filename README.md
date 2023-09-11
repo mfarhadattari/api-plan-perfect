@@ -24,6 +24,6 @@ API OF PLAN PERFECT (TODO Application)
 
 - Add Archive (DELETE) => https://api-plan-perfect.vercel.app/archive-task/id
 
-- MY Archive (GET) => https://api-plan-perfect.vercel.app/archive
+- MY Archive (GET) => https://api-plan-perfect.vercel.app/archives
 
-- Delete Archive (DELETE) => https://api-plan-perfect.vercel.app/archive/id
+- Delete Archive (DELETE) => https://api-plan-perfect.vercel.app/archives/id
